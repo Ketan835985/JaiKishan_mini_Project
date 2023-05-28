@@ -9,4 +9,10 @@ card fetching
 
 login details 
 
-use emailID and DOB for login customer
+use emailID and DOB for login customer\\
+
+
+DOB FORMAT use  = YYYY-MM-DD
+
+
+token headers name `x-auth-token`

@@ -11,17 +11,12 @@ const isValidCustomer = async function (customerId) {
 
 
 
-/* cardNumber string Auto_increment e.g: C001
-cardType String [REGULAR/SPECIAL]
-customerName string
-status string [ACTIVE/INACTIVE] Default: ACTIVE
-vision string
-customerID*/
 
 const createCard = async (req, res) => {
     try {
         const { cardType, customerName, vision, customerID } = req.body
         if (!cardType || !customerName || !vision || !customerID) return res.status(400).send({ status: false, message: 'Provide all the Details' })
+        if(!["REGULAR", "SPECIAL"].includes(cardType)) return res.status(400).send({ status: false, message: ' CardType must be "REGULAR" or "SPECIAL"' })
         if (!ObjectId.isValid(customerID)) return res.status(400).send({ status: false, message: 'Invalid customerID' })
         if (!isValidCustomer(customerID)) return res.status(400).send({ status: false, message: 'Invalid customer, Customer does not exist' })
         if (customerID != req.customerID) return res.status(400).send({ status: false, message: 'Invalid customer ID for card Creation' })
@@ -38,6 +33,7 @@ const createCard = async (req, res) => {
 const getCard = async (req, res) => {
     try {
         const card = await cardModel.find({customerID: req.customerID})
+        if(card.length ===0) return res.status(404).send({ status: false , message : 'Not Found any card' })
         res.status(200).send({ status: true, message: card })
     } catch (error) {
         res.status(500).send({ status: false, message: error.message })

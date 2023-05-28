@@ -9,7 +9,7 @@ customerID string Reference from customer
 table*/
 
 const cardSchema  = new mongoose.Schema({
-    cardNumber : Number,
+    cardNumber : String,
     cardType : {
         type : String,
         enum : ['REGULAR', 'SPECIAL']
