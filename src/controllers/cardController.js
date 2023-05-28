@@ -8,10 +8,6 @@ const isValidCustomer = async function (customerId) {
     else return false
 }
 
-
-
-
-
 const createCard = async (req, res) => {
     try {
         const { cardType, customerName, vision, customerID } = req.body
