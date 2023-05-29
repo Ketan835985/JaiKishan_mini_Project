@@ -2,6 +2,7 @@ const customerModel = require('../Model/customerModel')
 const validator = require('validator')
 const jwt = require('jsonwebtoken')
 const { SECRETE_KEY } = require('../../config')
+const { isValidObjectId } = require('mongoose')
 
 
 // console.log(validator.isDate("06-06-2000")) false// use YYYY-MM-DD for true
@@ -32,7 +33,7 @@ const customerLogin = async (req, res) => {
         if (!DOB) return res.status(400).send({ status: false, message: 'Provide a Date of Birth for login in YYYY-MM-DD' })
         const customer = await customerModel.findOneAndUpdate({ emailID: emailID, DOB: DOB }, {$set : {status : "ACTIVE"}})
         if (!customer) return res.status(400).send({ status: false, message: 'NO such customer' })
-        const token = jwt.sign({ customerID: customer._id }, SECRETE_KEY)
+        const token = jwt.sign({ customerID: customer.customerID }, SECRETE_KEY)
         if (!token) return res.status(400).send({ status: false, message: 'token Not yet Generate' })
         res.status(200).send({ status: true, token: token })
 
@@ -44,7 +45,7 @@ const customerLogin = async (req, res) => {
 
 const getCustomer = async (req, res) => {
     try {
-        const allCustomerDetails = await customerModel.find({ _id: req.customerID, status: "ACTIVE" })
+        const allCustomerDetails = await customerModel.find({ customerID: req.customerID, status: "ACTIVE" })
         if(allCustomerDetails.length === 0) return res.status(404).send({ status: false, message: 'No such customer' })
         res.status(200).send({ status: true, customer: allCustomerDetails })
     } catch (error) {
@@ -55,8 +56,10 @@ const getCustomer = async (req, res) => {
 const DeleteCustomer = async (req, res) => {
     try {
         const customerId = req.params.customerId
-        const customer = await customerModel.findOne({ _id: customerId, status: "ACTIVE" })
-        if (customerId != req.customerID) return res.status(400).send({ status: false, message: 'Unauthorized Customer for Delete' })
+        if(! isValidObjectId(req.customerID)) return res.status(400).send({ status: false, message: 'Not Valid customer for deletion' })   
+        // customerID = req.customerID     
+        const customer = await customerModel.findOne({ customerID: req.customerID, status: "ACTIVE" })
+        if (customerId != customer._id) return res.status(400).send({ status: false, message: 'Unauthorized Customer for Delete' })
         if (!customer) return res.status(404).send({ status: false, message: "Customer does not exist " })
         const deleteCustomer = await customerModel.findOneAndUpdate({ _id: customer, status: "ACTIVE" }, { $set: { status: "INACTIVE" } }, { new: true })
         res.status(200).send({ status: true, customer: deleteCustomer })

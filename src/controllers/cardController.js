@@ -3,7 +3,7 @@ const ObjectId = require('mongoose').Types.ObjectId
 
 
 const isValidCustomer = async function (customerId) {
-    const customer = await cardModel.findById(customerId)
+    const customer = await cardModel.findOne({customerId : customerId})
     if (customer) return true
     else return false
 }
@@ -11,12 +11,13 @@ const isValidCustomer = async function (customerId) {
 const createCard = async (req, res) => {
     try {
         const { cardType, customerName, vision, customerID } = req.body
-        if (!cardType || !customerName || !vision || !customerID) return res.status(400).send({ status: false, message: 'Provide all the Details' })
+        if (!cardType || !customerName || !vision) return res.status(400).send({ status: false, message: 'Provide all the Details' })
         if(!["REGULAR", "SPECIAL"].includes(cardType)) return res.status(400).send({ status: false, message: ' CardType must be "REGULAR" or "SPECIAL"' })
-        if (!ObjectId.isValid(customerID)) return res.status(400).send({ status: false, message: 'Invalid customerID' })
+        // if (!ObjectId.isValid(customerID)) return res.status(400).send({ status: false, message: 'Invalid customerID' })
         if (!isValidCustomer(customerID)) return res.status(400).send({ status: false, message: 'Invalid customer, Customer does not exist' })
-        if (customerID != req.customerID) return res.status(400).send({ status: false, message: 'Invalid customer ID for card Creation' })
+        // if (customerID != req.customerID) return res.status(400).send({ status: false, message: 'Invalid customer ID for card Creation' })
         else {
+            req.body.customerID = req.customerID
             let cardAvailable = await cardModel.find().count()
             cardAvailable = cardAvailable + 1
             req.body.cardNumber = "C00" + cardAvailable

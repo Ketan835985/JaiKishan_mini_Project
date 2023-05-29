@@ -13,6 +13,8 @@
     "express": "^4.18.2",
     "jsonwebtoken": "^9.0.0",
     "mongoose": "^7.2.1",
+    "mongoose-uuid": "^0.0.2",
+    "uuid": "^9.0.0",
     "validator": "^13.9.0"
   }
 }
