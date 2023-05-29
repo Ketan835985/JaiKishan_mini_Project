@@ -17,6 +17,9 @@ const createCard = async (req, res) => {
         if (!isValidCustomer(customerID)) return res.status(400).send({ status: false, message: 'Invalid customer, Customer does not exist' })
         if (customerID != req.customerID) return res.status(400).send({ status: false, message: 'Invalid customer ID for card Creation' })
         else {
+            let cardAvailable = await cardModel.find().count()
+            cardAvailable = cardAvailable + 1
+            req.body.cardNumber = "C00" + cardAvailable
             const card = await cardModel.create(req.body)
             res.status(201).send({ status: true, message: card })
 
